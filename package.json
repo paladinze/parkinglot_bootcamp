@@ -1,0 +1,17 @@
+{
+  "name": "fp_bootcamp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jest": "^24.9.0",
+    "lodash": "^4.17.15",
+    "ramda": "^0.26.1"
+  }
+}
