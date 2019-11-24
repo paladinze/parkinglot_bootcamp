@@ -1,32 +1,56 @@
-function uuidv4() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
+const { DEFAULT_PARKING_SIZE } = require("./constants");
+const uuidv4 = require("uuid/v4");
 
-const PACKING_SIZE = 50;
-const createParkingLot = (size) => ({
-  space: [],
-  size,
+const createParkingLot = (maxSize = DEFAULT_PARKING_SIZE) => ({
+  cars: [],
+  maxSize
 });
 
-const createPassword = (carInfo, parkingLot) => {
-  const { space, size} = parkingLot
-  if (space.length === size) {
-    console.log('space full')
+const createTicket = (carInfo, parkingLot) => {
+  const { cars, maxSize } = parkingLot;
+  if (cars.length >= maxSize) {
     return false;
   }
-  return ({
+  const carsWithSameId = cars.filter(car => car.carId === carInfo.carId);
+  if (carsWithSameId.length) {
+    return false;
+  }
+  return {
     ...carInfo,
-    password: uuidv4(),
-  });
+    ticketId: uuidv4()
+  };
 };
 
-const theParkingLot = createParkingLot(PACKING_SIZE);
-const password = createPassword({model: 'bz'}, theParkingLot);
+const addCarToParkingLot = (carWithTicket, parkingLot) => {
+  const { cars } = parkingLot;
+  return {
+    ...parkingLot,
+    cars: cars.concat(carWithTicket)
+  };
+};
+
+const verifyReleaseCar = (givenInfo, parkingLot) => {
+  const { cars } = parkingLot;
+  const { carId, ticketId } = givenInfo;
+  if (!carId || !ticketId) {
+    return false;
+  }
+  const matchedCar = cars.find(car => {
+    return car.carId === carId && car.ticketId === ticketId;
+  });
+  if (!matchedCar) return false;
+  return matchedCar;
+};
+
+const removeCarFromParkingLot = (carWithTicket, parkingLot) => ({
+  ...parkingLot,
+  cars: parkingLot.cars.filter(car => car.carId !== carWithTicket.carId)
+});
 
 module.exports = {
   createParkingLot,
-  createPassword
+  createTicket,
+  addCarToParkingLot,
+  verifyReleaseCar,
+  removeCarFromParkingLot
 };

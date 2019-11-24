@@ -12,6 +12,7 @@
   "dependencies": {
     "jest": "^24.9.0",
     "lodash": "^4.17.15",
+    "node-uuid": "^1.4.8",
     "ramda": "^0.26.1"
   }
 }
