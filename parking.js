@@ -1,4 +1,5 @@
 const { DEFAULT_PARKING_SIZE } = require("./constants");
+const fp = require("ramda");
 const uuidv4 = require("uuid/v4");
 
 const createParkingLot = (maxSize = DEFAULT_PARKING_SIZE) => ({
@@ -6,7 +7,7 @@ const createParkingLot = (maxSize = DEFAULT_PARKING_SIZE) => ({
   maxSize
 });
 
-const createTicket = (carInfo, parkingLot) => {
+const createTicket = fp.curry((carInfo, parkingLot) => {
   const { cars, maxSize } = parkingLot;
   if (cars.length >= maxSize) {
     return false;
@@ -19,15 +20,21 @@ const createTicket = (carInfo, parkingLot) => {
     ...carInfo,
     ticketId: uuidv4()
   };
-};
+});
 
-const addCarToParkingLot = (carWithTicket, parkingLot) => {
+const addCarToParkingLot = fp.curry((carWithTicket, parkingLot) => {
   const { cars } = parkingLot;
+  const { carId, ticketId } = carWithTicket;
+  const existCarId = cars.find(car => car.carId === carId);
+  const existTicketId = cars.find(car => car.ticketId === ticketId);
+  if (!carWithTicket || existCarId || existTicketId) {
+    return parkingLot;
+  }
   return {
     ...parkingLot,
     cars: cars.concat(carWithTicket)
   };
-};
+});
 
 const verifyReleaseCar = (givenInfo, parkingLot) => {
   const { cars } = parkingLot;

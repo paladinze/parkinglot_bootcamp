@@ -43,12 +43,22 @@ describe("create ticket", () => {
 });
 
 describe("add Car To Parking Lot", () => {
+  const maxSize = 3;
+  const parkingLot = createParkingLot(maxSize);
+  const car = { carId: "abc" };
+  const carWithTicket = createTicket(car, parkingLot);
   it("should add car to parking lot, and return current state of the parking lot given a car with ticket is added", () => {
-    const maxSize = 3;
-    const parkingLot = createParkingLot(maxSize);
-    const car = { carId: "abc" };
-    const carWithTicket = createTicket(car, parkingLot);
     const parkingLotUpdated = addCarToParkingLot(carWithTicket, parkingLot);
+    const expected = {
+      cars: [carWithTicket],
+      maxSize
+    };
+    expect(parkingLotUpdated).toEqual(expected);
+  });
+  it("should not add the car twice, if the same carId or ticketId already exist", () => {
+    let parkingLotUpdated = addCarToParkingLot(carWithTicket, parkingLot);
+    parkingLotUpdated = addCarToParkingLot(carWithTicket, parkingLot);
+    parkingLotUpdated = addCarToParkingLot(carWithTicket, parkingLot);
     const expected = {
       cars: [carWithTicket],
       maxSize
@@ -73,7 +83,7 @@ describe("verify releasing car", () => {
   });
   it("should reject release when the ticketInfo is missing", () => {
     const givenInfo = {
-      carId: "efg",
+      carId: "efg"
     };
     expect(verifyReleaseCar(givenInfo, parkingLot)).toEqual(false);
   });
@@ -85,8 +95,8 @@ describe("verify releasing car", () => {
   });
 });
 
-describe('remove car from parking ', () => {
-  it('should remove car from the parking lot and return latest parking lot state, when verified car info is given', () => {
+describe("remove car from parking ", () => {
+  it("should remove car from the parking lot and return latest parking lot state, when verified car info is given", () => {
     const addedCar1 = { carId: "abc", model: "bz", ticketId: "567" };
     const addedCar2 = { carId: "efg", model: "bmw", ticketId: "234" };
     const parkingLot = {
@@ -98,8 +108,8 @@ describe('remove car from parking ', () => {
       maxSize: 3
     };
     expect(removeCarFromParkingLot(addedCar1, parkingLot)).toEqual(expected);
-  })
-  it('should do nothing and return latest parking lot state, when verified car is already released', () => {
+  });
+  it("should do nothing and return latest parking lot state, when verified car is already released", () => {
     const releasedCar = { carId: "abc", model: "bz", ticketId: "567" };
     const addedCar2 = { carId: "efg", model: "bmw", ticketId: "234" };
     const parkingLot = {
@@ -108,5 +118,5 @@ describe('remove car from parking ', () => {
     };
     const expected = parkingLot;
     expect(removeCarFromParkingLot(releasedCar, parkingLot)).toEqual(expected);
-  })
-})
+  });
+});

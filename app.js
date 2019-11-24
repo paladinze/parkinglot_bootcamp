@@ -1,6 +1,20 @@
-const { createParkingLot, createTicket } = require("./parking");
+const {
+  createParkingLot,
+  createTicket,
+  addCarToParkingLot
+} = require("./parking");
+const fp = require("ramda");
 
-const parkingLots = [];
+let parkingLot = createParkingLot(2);
+const cars = [
+  { carId: "abc", model: "bz" },
+  { carId: "efg", model: "bz" },
+  { carId: "hij", model: "bmw" }
+];
 
-const theParkingLot = createParkingLot(PACKING_SIZE);
-const ticket = createTicket({ model: "bz" }, theParkingLot);
+cars.forEach(car => {
+  const ticket = createTicket(car, parkingLot);
+  parkingLot = addCarToParkingLot(ticket, parkingLot);
+});
+
+console.log(parkingLot);
